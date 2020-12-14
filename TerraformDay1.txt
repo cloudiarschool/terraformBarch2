@@ -1,0 +1,30 @@
+12/12/2020
+
+1. Terraform is IAC (Infrastructure as Code) tool
+2. Why terraform --> To build immutable Infrastructure
+3. Terraform is a Cloud/Platform agnostic tool
+4. You can use terraform with any terraform supported providers (Cloud/Platform)
+5. curl -O https://releases.hashicorp.com/terraform/0.14.2/terraform_0.14.2_darwin_amd64.zip
+6. unzip terraform_0.14.2_darwin_amd64.zip -d /usr/local/bin/
+7. terraform --version
+8. Terraform uses --> HCL (hashicorp corporate language)
+9. Deploy Terraform to different environments
+10. Terraform uses workspaces to identify the environments
+11. terraform workspace list --> By default it will use default workspace
+12. Create new workspace (environment) --> terraform workspace new dev/prod/stage/qa/sandbox/playground
+
+locals {
+  vpc_name = terraform.workspace == "dev" ? "CloudiarVPC-dev" : "CloudiarVPC-prod"
+}
+
+resource "aws_vpc" "my_vpc" {
+  count            = terraform.workspace == "prod" ? 0 : 1
+  cidr_block       = var.vpc_cidr
+  instance_tenancy = "default"
+
+  tags = {
+    Name        = local.vpc_name
+    Environment = terraform.workspace
+    Location    = "USA"
+  }
+}
